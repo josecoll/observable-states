@@ -9,6 +9,7 @@ import net.corda.core.flows.StartableByRPC
 import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.TransactionBuilder
+import net.corda.core.utilities.ProgressTracker
 import net.corda.demos.crowdFunding.contracts.CampaignContract
 import net.corda.demos.crowdFunding.structures.Campaign
 
@@ -22,6 +23,16 @@ import net.corda.demos.crowdFunding.structures.Campaign
  */
 @StartableByRPC
 class StartCampaign(private val newCampaign: Campaign) : FlowLogic<SignedTransaction>() {
+
+    companion object {
+        object BROADCAST_CAMPAIGN : ProgressTracker.Step("Broadcasting campaign to all observers.")
+
+        fun tracker() = ProgressTracker(
+                BROADCAST_CAMPAIGN
+        )
+    }
+
+    override val progressTracker = tracker()
 
     @Suspendable
     override fun call(): SignedTransaction {
@@ -38,6 +49,7 @@ class StartCampaign(private val newCampaign: Campaign) : FlowLogic<SignedTransac
         val ftx = subFlow(FinalityFlow(stx))
 
         // Broadcast this transaction to all parties on this business network.
+        progressTracker.currentStep = BROADCAST_CAMPAIGN
         subFlow(BroadcastTransaction(ftx))
 
         return ftx

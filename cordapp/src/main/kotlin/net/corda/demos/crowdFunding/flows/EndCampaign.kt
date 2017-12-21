@@ -2,6 +2,7 @@ package net.corda.demos.crowdFunding.flows
 
 import co.paralleluniverse.fibers.Suspendable
 import net.corda.core.contracts.Command
+import net.corda.core.contracts.ContractClassName
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateRef
 import net.corda.core.flows.*
@@ -15,8 +16,9 @@ import net.corda.demos.crowdFunding.pledgersForCampaign
 import net.corda.demos.crowdFunding.structures.Campaign
 import net.corda.demos.crowdFunding.structures.CampaignResult
 import net.corda.demos.crowdFunding.structures.CashStatesPayload
-import net.corda.finance.contracts.asset.CASH_PROGRAM_ID
 import net.corda.finance.contracts.asset.Cash
+
+const val CASH_PROGRAM_ID: ContractClassName = "net.corda.finance.contracts.asset.Cash"
 
 /**
  * This pair of flows deals with ending the campaign, whether it successfully reaches its target or not. If the

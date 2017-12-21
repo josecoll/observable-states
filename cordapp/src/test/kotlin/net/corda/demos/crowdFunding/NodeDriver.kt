@@ -3,8 +3,7 @@ package net.corda.demos.crowdFunding
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.utilities.getOrThrow
 import net.corda.node.services.transactions.ValidatingNotaryService
-import net.corda.nodeapi.User
-import net.corda.nodeapi.internal.ServiceInfo
+import net.corda.nodeapi.internal.config.User
 import net.corda.testing.driver.driver
 
 /**
@@ -25,13 +24,11 @@ fun main(args: Array<String>) {
     val user = User("user1", "test", permissions = setOf())
     driver(isDebug = true) {
         val (_, nodeA, nodeB) = listOf(
-                startNode(providedName = CordaX500Name("Controller", "London", "GB"), advertisedServices = setOf(ServiceInfo(ValidatingNotaryService.type))),
+                startNode(providedName = CordaX500Name("Controller", "London", "GB"), rpcUsers = listOf(user)),
                 startNode(providedName = CordaX500Name("PartyA", "London", "GB"), rpcUsers = listOf(user)),
                 startNode(providedName = CordaX500Name("PartyB", "New York", "US"), rpcUsers = listOf(user))).map { it.getOrThrow() }
 
         startWebserver(nodeA)
         startWebserver(nodeB)
-
-        waitForAllNodesToFinish()
     }
 }

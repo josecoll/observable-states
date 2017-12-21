@@ -26,6 +26,9 @@ data class Pledge(
     override fun generateMappedObject(schema: MappedSchema) = PledgeSchemaV1.PledgeEntity(this)
 
     object PledgeSchemaV1 : MappedSchema(Pledge::class.java, 1, listOf(PledgeEntity::class.java)) {
+
+        override val migrationResource = "pledge.changelog-init"
+
         @Entity
         @Table(name = "pledges")
         class PledgeEntity(pledge: Pledge) : PersistentState() {

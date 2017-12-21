@@ -1,0 +1,22 @@
+myLegalName="O=PartyA,L=London,C=GB"
+p2pAddress="localhost:10005"
+rpcAddress="localhost:10006"
+rpcUsers=[
+    {
+        password=test
+        permissions=[]
+        user=user1
+    }
+]
+webAddress="localhost:10007"
+dataSourceProperties = {
+    dataSourceClassName = "com.microsoft.sqlserver.jdbc.SQLServerDataSource"
+    dataSource.url = "jdbc:sqlserver://qa-testing.database.windows.net:1433;database=qa-testing1"
+    dataSource.user = colljos
+    dataSource.password = R3enterprise
+}
+database = {
+    initialiseSchema=true
+    transactionIsolationLevel = READ_COMMITTED
+    schema=PartyB
+}

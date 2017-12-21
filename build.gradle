@@ -1,14 +1,22 @@
 buildscript {
-    ext.corda_release_version = '2.0.0'
-    ext.corda_gradle_plugins_version = '1.0.0'
-    ext.kotlin_version = '1.1.4'
+    ext.corda_release_version = '3.0-ENT-RC01'
+    ext.corda_gradle_plugins_version = '3.0.2'
+    ext.kotlin_version = '1.1.60'
+    ext.quasar_version = '0.7.9'
     ext.junit_version = '4.12'
-    ext.quasar_version = '0.7.6'
+    ext.jolokia_version = '1.3.7'
 
     repositories {
         mavenLocal()
         mavenCentral()
         jcenter()
+        maven {
+            credentials {
+                username "jose.coll"
+                password "Password123!"
+            }
+            url 'https://ci-artifactory.corda.r3cev.com/artifactory/enterprise-release'
+        }
     }
 
     dependencies {
@@ -62,22 +70,22 @@ dependencies {
     testCompile "junit:junit:$junit_version"
 
     // Corda integration dependencies
-    cordaCompile "net.corda:corda-core:$corda_release_version"
-    cordaCompile "net.corda:corda-finance:$corda_release_version"
-    cordaCompile "net.corda:corda-jackson:$corda_release_version"
-    cordaCompile "net.corda:corda-rpc:$corda_release_version"
-    cordaCompile "net.corda:corda-node-api:$corda_release_version"
-    cordaCompile "net.corda:corda-webserver-impl:$corda_release_version"
-    cordaRuntime "net.corda:corda:$corda_release_version"
-    cordaRuntime "net.corda:corda-webserver:$corda_release_version"
+    compile "com.r3.corda.enterprise:corda-core:$corda_release_version"
+    compile "com.r3.corda.enterprise:corda-finance:$corda_release_version"
+    compile "com.r3.corda.enterprise:corda-jackson:$corda_release_version"
+    compile "com.r3.corda.enterprise:corda-rpc:$corda_release_version"
+    compile "com.r3.corda.enterprise:corda-node-api:$corda_release_version"
+    compile "com.r3.corda.enterprise:corda-webserver-impl:$corda_release_version"
+    runtime "com.r3.corda.enterprise:corda:$corda_release_version"
+    runtime "com.r3.corda.enterprise:corda-webserver:$corda_release_version"
 
-    testCompile "net.corda:corda-node-driver:$corda_release_version"
+    testCompile "com.r3.corda.enterprise:corda-node-driver:$corda_release_version"
 
     // CorDapp dependencies
     // Specify your CorDapp's dependencies below, including dependent CorDapps.
     // We've defined Cash as a dependent CorDapp as an example.
     cordapp project(":cordapp")
-    cordapp "net.corda:corda-finance:$corda_release_version"
+    cordapp "com.r3.corda.enterprise:corda-finance:$corda_release_version"
 }
 
 task integrationTest(type: Test, dependsOn: []) {
@@ -96,39 +104,36 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
     directory "./build/nodes"
-    networkMap "O=Controller,L=London,C=GB"
     node {
         name "O=Controller,L=London,C=GB"
-        advertisedServices = ["corda.notary.validating"]
+        notary = [validating : true]
         p2pPort 10002
         rpcPort 10003
         cordapps = [
                 "$project.group:shared:$project.version",
-                "net.corda:corda-finance:$corda_release_version"
+                "com.r3.corda.enterprise:corda-finance:$corda_release_version"
         ]
     }
     node {
         name "O=PartyA,L=London,C=GB"
-        advertisedServices = []
         p2pPort 10005
         rpcPort 10006
         webPort 10007
         cordapps = [
                 "$project.group:shared:$project.version",
                 "$project.group:cordapp:$project.version",
-                "net.corda:corda-finance:$corda_release_version"
+                "com.r3.corda.enterprise:corda-finance:$corda_release_version"
         ]
         rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
     }
     node {
         name "O=PartyB,L=New York,C=US"
-        advertisedServices = []
         p2pPort 10008
         rpcPort 10009
         webPort 10010
         cordapps = [
                 "$project.group:cordapp:$project.version",
-                "net.corda:corda-finance:$corda_release_version"
+                "com.r3.corda.enterprise:corda-finance:$corda_release_version"
         ]
         rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
     }
