@@ -11,10 +11,6 @@ buildscript {
         mavenCentral()
         jcenter()
         maven {
-            credentials {
-                username "jose.coll"
-                password "Password123!"
-            }
             url 'https://ci-artifactory.corda.r3cev.com/artifactory/enterprise-release'
         }
     }
